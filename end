@@ -1,0 +1,11 @@
+[33mcommit ca3f233298a8461aca52c17f28613ada20c13f96[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m)[m
+Author: matancotton <matancotton1@gmaol.com>
+Date:   Sun Jan 31 20:41:12 2021 +0200
+
+    Remove dummy expense data
+
+[33mcommit b5249d7f5d6ac8995ca18f6034ea9c8b0e12d93f[m
+Author: matancotton <matancotton1@gmaol.com>
+Date:   Sun Jan 31 20:24:15 2021 +0200
+
+    Initial commit
