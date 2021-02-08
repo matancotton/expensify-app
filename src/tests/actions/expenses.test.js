@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { startAddExpense ,addExpense, editExpense, removeExpense, setExpenses, startSetExpenses, startRemoveExpense } from '../../actions/expenses';
+import { startAddExpense ,addExpense, editExpense, removeExpense, setExpenses, startSetExpenses, startRemoveExpense, startEditExpense } from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 import database from '../../firebase/firebase';
 
@@ -22,12 +22,51 @@ test('should setup remove expense action object', () => {
     })
 })
 
+test('should remove expenses from firebase', (done)=>{
+    const store = createMockStore({});
+    store.dispatch(startRemoveExpense({id: expenses[1].id})).then(()=>{
+        const actions = store.getActions();
+        expect(actions[0]).toEqual({
+            type: 'REMOVE_EXPENSE',
+            id: expenses[1].id
+        });
+        return database.ref(`expenses/${expenses[1].id}`).once('value');
+        }).then((snapshot) => {
+        expect(snapshot.val()).toBeFalsy();
+        done();
+    })
+})
+
 test('should setup edit expense action object', () => {
     const action = editExpense('123abc',{ note: 'New note value' });
     expect(action).toEqual({
         type: 'EDIT_EXPENSE',
         id: '123abc',
         updates: { note: 'New note value' }
+    })
+})
+
+test('should edit expenses from firebase', (done)=>{
+    const store = createMockStore();
+    const updates = {description: 'test updates'};
+    const expenseData = {
+        description: updates.description,
+        amount: expenses[0].amount,
+        createdAt: expenses[0].createdAt,
+        note: expenses[0].note,
+    }
+    store.dispatch(startEditExpense(expenses[0].id,updates)).then(()=>{
+        const actions = store.getActions();
+        expect(actions[0]).toEqual({
+            type: 'EDIT_EXPENSE',
+            id: expenses[0].id,
+            updates
+        });
+        
+        return database.ref(`expenses/${expenses[0].id}`).once('value');
+    }).then((snapshot)=>{
+        expect(snapshot.val()).toEqual(expenseData);
+        done();
     })
 })
 
@@ -129,17 +168,4 @@ test('should fetch the expenses from firebase', (done)=>{
     })
 });
 
-test('should remove expenses from firebase', (done)=>{
-    const store = createMockStore({});
-    store.dispatch(startRemoveExpense({id: expenses[1].id})).then(()=>{
-        const actions = store.getActions();
-        expect(actions[0]).toEqual({
-            type: 'REMOVE_EXPENSE',
-            id: expenses[1].id
-        });
-        return database.ref(`expenses/${expenses[1].id}`).once('value');
-        }).then((snapshot) => {
-        expect(snapshot.val()).toEqual(null);
-        done();
-    })
-})
+
