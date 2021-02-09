@@ -47,7 +47,7 @@ test('should setup edit expense action object', () => {
 })
 
 test('should edit expenses from firebase', (done)=>{
-    const store = createMockStore();
+    const store = createMockStore({});
     const updates = {description: 'test updates'};
     const expenseData = {
         description: updates.description,
@@ -110,7 +110,7 @@ test('should add expense to database and store', (done) => {
     });
 });
 
-test('should add expense with defaults to database and store with default values', () => {
+test('should add expense with defaults to database and store with default values', (done) => {
     const store = createMockStore({});
     const expenseDefaults = {
         description: '',
